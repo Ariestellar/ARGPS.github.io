@@ -11,7 +11,7 @@
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
       <a-entity
         id="ar-object"
-        gps-entity-place="latitude: 54.329344; longitude: 48.381952;"
+        gps-entity-place="latitude: 54.329444; longitude: 48.382052;"
         geometry="primitive: box; height: 2; width: 2; depth: 2"
         material="color: red; opacity: 0.8"
       ></a-entity>
@@ -26,13 +26,23 @@
     </a-scene>
     
     <script>
+      let initialLatitude = null;
+      let initialLongitude = null;
+      let objectPlaced = false;
+
       function updateLocation(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         const arObject = document.getElementById("ar-object");
         const locationText = document.getElementById("location-text");
+
+        if (!objectPlaced) {
+          initialLatitude = latitude + 0.0001;
+          initialLongitude = longitude;
+          arObject.setAttribute("gps-entity-place", `latitude: ${initialLatitude}; longitude: ${initialLongitude};`);
+          objectPlaced = true;
+        }
         
-        arObject.setAttribute("gps-entity-place", `latitude: ${latitude + 0.0001}; longitude: ${longitude};`);
         locationText.setAttribute("value", `Lat: ${latitude}, Lng: ${longitude}`);
       }
 
