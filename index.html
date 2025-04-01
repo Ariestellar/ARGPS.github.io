@@ -42,7 +42,7 @@
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
       <a-entity
         id="ar-object"
-        gps-entity-place="latitude: 55.8870358016 longitude: 37.4418419170;"
+        gps-entity-place="latitude: 55.8870358016; longitude: 37.4418419170;"
         geometry="primitive: box; height: 2; width: 2; depth: 2"
         material="color: red; opacity: 0.8"
       ></a-entity>
@@ -50,6 +50,34 @@
     </a-scene>
     
     <script>
+      function requestLocationPermission() {
+        if (navigator.permissions) {
+          navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
+            if (permissionStatus.state === 'granted') {
+              startGeolocation();
+            } else if (permissionStatus.state === 'prompt') {
+              navigator.geolocation.getCurrentPosition(() => startGeolocation(), locationError);
+            } else {
+              document.getElementById("accuracy-ui").textContent = "Geolocation permission denied.";
+            }
+          });
+        } else {
+          startGeolocation();
+        }
+      }
+
+      function startGeolocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.watchPosition(updateLocation, locationError, {
+            enableHighAccuracy: true,
+            timeout: 100,
+            maximumAge: 0
+          });
+        } else {
+          document.getElementById("accuracy-ui").textContent = "Geolocation not supported.";
+        }
+      }
+
       function updateLocation(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
@@ -64,15 +92,27 @@
         document.getElementById("accuracy-ui").textContent = "Location error: " + error.message;
       }
 
-      if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(updateLocation, locationError, {
-          enableHighAccuracy: true,
-          timeout: 100,
-          maximumAge: 0
-        });
-      } else {
-        document.getElementById("accuracy-ui").textContent = "Geolocation not supported.";
-      }
+      AFRAME.registerComponent('update-each-frame', {
+        tick: function () {
+          const camera = document.querySelector('[gps-camera]');
+          const arObject = document.querySelector('#ar-object');
+          if (camera && arObject) {
+            const distance = camera.object3D.position.distanceTo(arObject.object3D.position);
+            console.log(`Distance to AR object: ${distance.toFixed(2)} meters`);
+            
+            navigator.geolocation.getCurrentPosition(position => {
+              const latitude = position.coords.latitude;
+              const longitude = position.coords.longitude;
+              arObject.setAttribute('gps-entity-place', `latitude: ${latitude}; longitude: ${longitude};`);
+              document.getElementById("location-ui").textContent = `Lat: ${latitude.toFixed(10)}, Lng: ${longitude.toFixed(10)}`;
+            });
+          }
+        }
+      });
+      
+      document.querySelector('#ar-object').setAttribute('update-each-frame', '');
+      
+      requestLocationPermission();
     </script>
   </body>
 </html>
