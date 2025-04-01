@@ -46,6 +46,7 @@
         font-family: Arial, sans-serif;
         font-size: 14px;
         cursor: pointer;
+        z-index: 9999; /* Поверх всего */
       }
     </style>
   </head>
@@ -61,7 +62,7 @@
         geometry="primitive: box; height: 0.1; width: 0.1; depth: 0"
         material="color: red; opacity: 0.8"
       ></a-entity>
-      <a-camera gps-camera rotation-reader gps-min-distance="5"></a-camera>
+      <a-camera gps-camera rotation-reader gps-min-distance="1"></a-camera>
     </a-scene>
     
     <script>
