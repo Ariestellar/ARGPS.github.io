@@ -113,7 +113,7 @@
 
       AFRAME.registerComponent('update-each-frame', {
         tick: function () {
-          navigator.geolocation.getCurrentPosition(updateLocation, error);
+          navigator.geolocation.getCurrentPosition(updateLocation, locationError);
         }
       });
       
