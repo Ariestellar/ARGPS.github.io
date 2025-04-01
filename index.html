@@ -59,7 +59,7 @@
       <a-entity
         id="ar-object"
         gps-entity-place="latitude: 55.8870358016; longitude: 37.4418419170;"
-        geometry="primitive: box; height: 0.1; width: 0.1; depth: 0"
+        geometry="primitive: box; height: 1; width: 1; depth: 0"
         material="color: red; opacity: 0.8"
       ></a-entity>
       <a-camera gps-camera rotation-reader gps-min-distance="1"></a-camera>
@@ -67,16 +67,24 @@
     
     <script>
       document.getElementById("request-location").addEventListener("click", function () {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            updateLocation(position);
+        navigator.permissions.query({ name: "geolocation" }).then((result) => {
+          if (result.state === "granted") {
             startGeolocation();
-          },
-          locationError,
-          { enableHighAccuracy: true }
-        );
+          } else if (result.state === "prompt") {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                updateLocation(position);
+                startGeolocation();
+              },
+              locationError,
+              { enableHighAccuracy: true }
+            );
+          } else {
+            alert("Геолокация заблокирована в настройках браузера.");
+          }
+        });
       });
-      
+
       function startGeolocation() {
         if (navigator.geolocation) {
           navigator.geolocation.watchPosition(updateLocation, locationError, {
