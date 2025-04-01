@@ -56,7 +56,7 @@
         const accuracy = position.coords.accuracy;
         const locationUI = document.getElementById("location-ui");
         const accuracyUI = document.getElementById("accuracy-ui");
-        locationUI.textContent = `Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}`;
+        locationUI.textContent = `Lat: ${latitude.toFixed(10)}, Lng: ${longitude.toFixed(10)}`;
         accuracyUI.textContent = `Accuracy: ±${accuracy.toFixed(2)} meters`;
       }
 
@@ -67,7 +67,7 @@
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(updateLocation, locationError, {
           enableHighAccuracy: true,
-          timeout: 10000,
+          timeout: 100,
           maximumAge: 0
         });
       } else {
