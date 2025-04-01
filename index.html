@@ -33,11 +33,26 @@
         font-size: 14px;
         text-align: center;
       }
+      #request-location {
+        position: absolute;
+        top: 90px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body style="margin: 0; overflow: hidden">
     <div id="location-ui">Lat: ---, Lng: ---</div>
     <div id="accuracy-ui">Accuracy: --- meters</div>
+    <button id="request-location">Запросить геопозицию</button>
     
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
       <a-entity
@@ -50,22 +65,17 @@
     </a-scene>
     
     <script>
-      function requestLocationPermission() {
-        if (navigator.permissions) {
-          navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
-            if (permissionStatus.state === 'granted') {
-              startGeolocation();
-            } else if (permissionStatus.state === 'prompt') {
-              navigator.geolocation.getCurrentPosition(() => startGeolocation(), locationError);
-            } else {
-              document.getElementById("accuracy-ui").textContent = "Geolocation permission denied.";
-            }
-          });
-        } else {
-          startGeolocation();
-        }
-      }
-
+      document.getElementById("request-location").addEventListener("click", function () {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            updateLocation(position);
+            startGeolocation();
+          },
+          locationError,
+          { enableHighAccuracy: true }
+        );
+      });
+      
       function startGeolocation() {
         if (navigator.geolocation) {
           navigator.geolocation.watchPosition(updateLocation, locationError, {
@@ -111,8 +121,6 @@
       });
       
       document.querySelector('#ar-object').setAttribute('update-each-frame', '');
-      
-      requestLocationPermission();
     </script>
   </body>
 </html>
