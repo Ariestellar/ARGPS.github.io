@@ -22,27 +22,14 @@
         align="center"
         color="white"
       ></a-text>
-      <a-camera gps-camera rotation-reader></a-camera>
+      <a-camera gps-camera rotation-reader gps-min-distance="5"></a-camera>
     </a-scene>
     
     <script>
-      let initialLatitude = null;
-      let initialLongitude = null;
-      let objectPlaced = false;
-
       function updateLocation(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        const arObject = document.getElementById("ar-object");
         const locationText = document.getElementById("location-text");
-
-        if (!objectPlaced) {
-          initialLatitude = latitude + 0.0001;
-          initialLongitude = longitude;
-          arObject.setAttribute("gps-entity-place", `latitude: ${initialLatitude}; longitude: ${initialLongitude};`);
-          objectPlaced = true;
-        }
-        
         locationText.setAttribute("value", `Lat: ${latitude}, Lng: ${longitude}`);
       }
 
@@ -54,6 +41,7 @@
         navigator.geolocation.watchPosition(updateLocation, locationError, {
           enableHighAccuracy: true,
           maximumAge: 0,
+          distanceFilter: 5
         });
       } else {
         console.error("Geolocation is not supported by this browser.");
