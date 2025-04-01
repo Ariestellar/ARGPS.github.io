@@ -6,8 +6,39 @@
     <title>WebAR GPS Object</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
+    <style>
+      #location-ui {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        text-align: center;
+      }
+      #accuracy-ui {
+        position: absolute;
+        top: 50px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        text-align: center;
+      }
+    </style>
   </head>
   <body style="margin: 0; overflow: hidden">
+    <div id="location-ui">Lat: ---, Lng: ---</div>
+    <div id="accuracy-ui">Accuracy: --- meters</div>
+    
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
       <a-entity
         id="ar-object"
@@ -15,13 +46,6 @@
         geometry="primitive: box; height: 2; width: 2; depth: 2"
         material="color: red; opacity: 0.8"
       ></a-entity>
-      <a-text
-        id="location-text"
-        value="Lat: 54.329344, Lng: 48.381952"
-        position="0 2 -5"
-        align="center"
-        color="white"
-      ></a-text>
       <a-camera gps-camera rotation-reader gps-min-distance="5"></a-camera>
     </a-scene>
     
@@ -29,22 +53,25 @@
       function updateLocation(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        const locationText = document.getElementById("location-text");
-        locationText.setAttribute("value", `Lat: ${latitude}, Lng: ${longitude}`);
+        const accuracy = position.coords.accuracy;
+        const locationUI = document.getElementById("location-ui");
+        const accuracyUI = document.getElementById("accuracy-ui");
+        locationUI.textContent = `Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}`;
+        accuracyUI.textContent = `Accuracy: ±${accuracy.toFixed(2)} meters`;
       }
 
       function locationError(error) {
-        console.error("Error obtaining location", error);
+        document.getElementById("accuracy-ui").textContent = "Location error: " + error.message;
       }
 
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(updateLocation, locationError, {
           enableHighAccuracy: true,
-          maximumAge: 0,
-          distanceFilter: 5
+          timeout: 10000,
+          maximumAge: 0
         });
       } else {
-        console.error("Geolocation is not supported by this browser.");
+        document.getElementById("accuracy-ui").textContent = "Geolocation not supported.";
       }
     </script>
   </body>
