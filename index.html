@@ -1,51 +1,9 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>WebAR GPS Object</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
-  </head>
-  <body style="margin: 0; overflow: hidden">
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-      <a-entity
-        id="ar-object"
-        gps-entity-place="latitude: 54.329444; longitude: 48.382052;"
-        geometry="primitive: box; height: 2; width: 2; depth: 2"
-        material="color: red; opacity: 0.8"
-      ></a-entity>
-      <a-text
-        id="location-text"
-        value="Lat: 54.329344, Lng: 48.381952"
-        position="0 2 -5"
-        align="center"
-        color="white"
-      ></a-text>
-      <a-camera gps-camera rotation-reader gps-min-distance="5"></a-camera>
-    </a-scene>
-    
-    <script>
-      function updateLocation(position) {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        const locationText = document.getElementById("location-text");
-        locationText.setAttribute("value", `Lat: ${latitude}, Lng: ${longitude}`);
-      }
-
-      function locationError(error) {
-        console.error("Error obtaining location", error);
-      }
-
-      if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(updateLocation, locationError, {
-          enableHighAccuracy: true,
-          maximumAge: 0,
-          distanceFilter: 5
-        });
-      } else {
-        console.error("Geolocation is not supported by this browser.");
-      }
-    </script>
-  </body>
+<head>
+<title>LocAR.js - Hello World</title>
+<script type='module' src='src/main.js'></script>
+</head>
+<body>
+</body>
 </html>
